@@ -29,6 +29,23 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+const std::string WHITESPACE = " \n\r\t\f\v";
+ 
+std::string ltrim(const std::string &s)
+{
+    size_t start = s.find_first_not_of(WHITESPACE);
+    return (start == std::string::npos) ? "" : s.substr(start);
+}
+ 
+std::string rtrim(const std::string &s)
+{
+    size_t end = s.find_last_not_of(WHITESPACE);
+    return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+ 
+std::string trim(const std::string &s) {
+    return rtrim(ltrim(s));
+}
 
 Config::Config(int argc, char *argv[])
   : _verbose(false)
@@ -63,10 +80,11 @@ Config::Config(int argc, char *argv[])
 
   for (std::string line; std::getline(inFile, line);) {
     std::istringstream iss(line);
-    std::string id, eq, val;
-    iss >> id >> eq >> val >> std::ws;
-    if (id[0] != '#' && eq == "=") {
-      _options[id] = val;
+    std::string id, val;
+    std::getline(iss, id, '=');
+    std::getline(iss, val, '=');
+    if (id[0] != '#') {
+      _options[trim(id)] = trim(val);
       if (verbose())
 	std::cout << "EmuSC:  -> Config: " << id << " = " << val << std::endl;
     }
@@ -196,18 +214,18 @@ bool Config::_write_default_config(void)
 	     << std::endl
 	     << "# MIDI input device [0 .. ]. Specifies MIDI device id (win32 "
 	     << "only)\n"
-	     << "#input_device=0\n"
+	     << "#input_device = 0\n"
 	     << std::endl
 	     << "# Audio output system [ alsa | pulse | win32 | core | null ]\n"
 	     << "output = alsa\n"
 	     << std::endl
 	     << "# Output device, e.g. 'default' or 'hw:0.1' for alsa.\n"
-	     << "output_device=default\n"
+	     << "output_device = default\n"
 	     << "# Output buffer time in us. Default = 75000\n"
-	     << "output_buffer_time=75000\n"
+	     << "output_buffer_time = 75000\n"
 	     << std::endl
 	     << "# Output period time in us. Used for alsa. default = 25000\n"
-	     << "output_period_time=25000\n"
+	     << "output_period_time = 25000\n"
 	     << std::endl
 	     << "# ROM files" << std::endl
 	     << "control_rom = /SC-55/roland_r15209363.ic23" << std::endl

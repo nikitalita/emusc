@@ -58,7 +58,7 @@ dnl -======================================================-
 case "$host" in
      	*-*-mingw32*)
 		LDFLAGS="$LDFLAGS -static-libstdc++ -static"
-		CXX=i686-w64-mingw32-g++-posix
+		CXX=i686-w64-mingw32-g++
 		;;
 	*-*-darwin*)
 dnl		CXXFLAGS="$CXXFLAGS -O3 -mdynamic-no-pic"		
